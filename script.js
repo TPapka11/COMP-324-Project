@@ -13,26 +13,31 @@ const budgetTableBody = document.querySelector('#budget-table tbody');
 let budgets = {};
 let expenses = {};
 
+// Save budgets and expenses to localStorage
+function saveToLocalStorage() {
+    localStorage.setItem('budgets', JSON.stringify(budgets));
+    localStorage.setItem('expenses', JSON.stringify(expenses));
+}
+
 // Add New Budget Category
 addCategoryBtn.addEventListener('click', () => {
     const newCategory = prompt("Enter a new budget category:");
     if (newCategory && !budgets[newCategory]) {
         budgets[newCategory] = 0;
         expenses[newCategory] = 0;
-
-        // Add input for budget amount
         const div = document.createElement('div');
         div.innerHTML = `
             <label>${newCategory}:</label>
             <input type="number" id="${newCategory}-budget" placeholder="Enter budget for ${newCategory}" min="0" required />
         `;
         budgetCategoriesDiv.appendChild(div);
-
-        // Add to Expense Categories Dropdown
         const option = document.createElement('option');
         option.value = newCategory;
         option.textContent = newCategory;
         expenseCategorySelect.appendChild(option);
+
+        // Save to localStorage
+        saveToLocalStorage();
     } else if (budgets[newCategory]) {
         alert("Category already exists.");
     }
@@ -54,6 +59,10 @@ setBudgetBtn.addEventListener('click', () => {
     });
 
     budgetMessage.textContent = `Budget "${budgetName}" has been set successfully!`;
+
+    // Save to localStorage
+    saveToLocalStorage();
+
     updateTable();
 });
 
@@ -64,9 +73,14 @@ addExpenseBtn.addEventListener('click', () => {
 
     if (category && amount > 0) {
         expenses[category] = (expenses[category] || 0) + amount;
+
+        // Save to localStorage
+        saveToLocalStorage();
+
         updateTable();
     }
 });
+
 
 // Update Table
 function updateTable() {
